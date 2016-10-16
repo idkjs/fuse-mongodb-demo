@@ -1,0 +1,55 @@
+<App>
+	<DockPanel>
+		<JavaScript>
+			
+			var Observable = require("FuseJS/Observable");
+
+
+			var places = Observable();
+			var errorMessage = Observable("");
+
+			// this structure is part of the Fuse API. Result will throw errors
+			// so dont have to do the callbacks. See https://youtu.be/m53gIB35AC8
+			// For failures: see https://youtu.be/m53gIB35AC8?list=PLdlqWm6b-XALJgM3fGa4q95Yipsgb8Q1o
+			
+			fetch('http://localhost:3000/places')
+			    .then(function(result) {
+			    	// if (result.status !== true) {
+			    	// 	errorMessage.value = "Something went wrong: " + result.status;
+			    	// 	return;
+			    	// }
+			    	result.json().then(function(data) {
+			            debug_log("Success!");
+
+			            for (var i = 0; i < 10; i++) {
+			            	var item = data[i];
+			            	places.add(item);
+			            }
+			        });
+			    }).catch(function(error) {
+			    	/* Act on the event */
+			    	errorMessage.value = "Oh no :(";
+			    });
+
+			module.exports = {
+			    places: places,
+			    errorMessage: errorMessage
+			}; 
+
+		</JavaScript>
+
+		<StatusBarBackground DockPanel.Dock="Top" />
+		<Text TextColor="#a94442" Value="{errorMessage}" Alignment="Center"/>
+
+		<ScrollView ClipToBounds="true">
+			<StackPanel>
+				<Each Items="{places}">
+					<DockPanel Margin="0,0,0,10">
+						<Text Value="{name}" TextWrapping="Wrap" Alignment="CenterLeft" Margin="10" />
+					</DockPanel>
+				</Each>
+			</StackPanel>
+		</ScrollView>
+	</DockPanel>
+</App>
+
